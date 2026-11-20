@@ -1,0 +1,94 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ChevronRight, FileText, KeyRound, LogOut, Phone, Shield, UserRound } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { LEGAL_LINKS, PHONE_DISPLAY, PHONE_TEL } from "@/lib/content";
+import { functionTitle } from "@/lib/staff-data";
+import { useStaff } from "@/lib/staff-store";
+
+export const Route = createFileRoute("/_app/profile")({
+  head: () => ({ meta: [{ title: "SIH&S — Profile" }] }),
+  component: Profile,
+});
+
+function Row({ to, icon, label, detail }: { to: string; icon: ReactNode; label: string; detail?: string }) {
+  return (
+    <Link to={to} className="flex min-h-[56px] items-center gap-3 border-b border-[#ececec] px-4 last:border-b-0">
+      <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#f3f4f6] text-[#2f7a1c]">{icon}</span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[16px] font-medium">{label}</span>
+        {detail && <span className="block truncate text-[13px] text-[#6b7280]">{detail}</span>}
+      </span>
+      <ChevronRight size={18} className="text-[#6b7280]" aria-hidden />
+    </Link>
+  );
+}
+
+function Profile() {
+  const { user, logout } = useStaff();
+  const navigate = useNavigate();
+  const [confirm, setConfirm] = useState(false);
+  const initial = user?.fullName.charAt(0) ?? "S";
+
+  return (
+    <div className="px-4 pb-8 pt-[max(1rem,env(safe-area-inset-top))]">
+      <h1 className="text-[28px] font-bold">Profile</h1>
+      <section className="mt-4 flex items-center gap-3 rounded-[16px] border border-[#e5e7eb] bg-white shadow-sm ring-1 ring-[#ececec] p-4">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#5cba40] text-[22px] font-bold text-white">{initial}</span>
+        <div>
+          <p className="text-[18px] font-semibold">{user?.fullName}</p>
+          <p className="text-[14px] text-[#6b7280]">{user?.email}</p>
+          <p className="text-[13px] text-[#6b7280]">{user?.organization} · Member since {user?.memberSince}</p>
+        </div>
+      </section>
+      <ul className="mt-3 flex flex-wrap gap-2">
+        {(user?.approvedRoles ?? []).map((code) => (
+          <li key={code} className="rounded-full bg-[#5cba40] px-2 py-1 text-xs font-semibold text-white">{functionTitle(code)}</li>
+        ))}
+      </ul>
+
+      <h2 className="mb-2 mt-6 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#6b7280]">Account</h2>
+      <nav className="overflow-hidden rounded-[16px] border border-[#e5e7eb] bg-white shadow-sm ring-1 ring-[#ececec]" aria-label="Account">
+        <Row to="/profile-edit" icon={<UserRound size={18} aria-hidden />} label="Personal Information" />
+        <Row to="/qualifications" icon={<FileText size={18} aria-hidden />} label="My Qualifications" />
+        <Row to="/roles" icon={<Shield size={18} aria-hidden />} label="My Roles and Access" detail="Roles are assigned by SIH&S" />
+        <Row to="/tracking" icon={<Shield size={18} aria-hidden />} label="Tracking and Privacy" />
+        <Row to="/password" icon={<KeyRound size={18} aria-hidden />} label="Password" detail="Change password. The saved password is never shown." />
+        <Row to="/security" icon={<KeyRound size={18} aria-hidden />} label="Devices and sessions" detail="Sign out all, lost device, accepted versions" />
+        <Row to="/time" icon={<FileText size={18} aria-hidden />} label="Time and expenses" />
+        <Row to="/crew" icon={<Shield size={18} aria-hidden />} label="Provider workspace" detail="Supervisor and company admin" />
+        <Row to="/help" icon={<FileText size={18} aria-hidden />} label="Help" detail="Replay tutorial" />
+        <Row to="/no-access" icon={<Shield size={18} aria-hidden />} label="No access example" />
+        <Row to="/office" icon={<FileText size={18} aria-hidden />} label="Office dashboard" />
+        <Row to="/notifications" icon={<Phone size={18} aria-hidden />} label="Notification Preferences" />
+      </nav>
+
+      <h2 className="mb-2 mt-6 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#6b7280]">Legal & Compliance</h2>
+      <nav className="overflow-hidden rounded-[16px] border border-[#e5e7eb] bg-white shadow-sm ring-1 ring-[#ececec]" aria-label="Legal and compliance">
+        {LEGAL_LINKS.map((link) => (
+          <Row key={link.id} to={`/legal/${link.id}`} icon={<FileText size={18} aria-hidden />} label={link.title} />
+        ))}
+      </nav>
+
+      <h2 className="mb-2 mt-6 text-[13px] font-semibold uppercase tracking-[0.12em] text-[#6b7280]">Help</h2>
+      <a href={`tel:${PHONE_TEL}`} className="flex min-h-11 items-center font-semibold text-[#2f7a1c]">Call {PHONE_DISPLAY}</a>
+      <Link to="/report" className="inline-flex min-h-11 items-center font-semibold text-[#2f7a1c]">Report an Incident or Concern</Link>
+      <Link to="/exceptions" search={{ screen: "" }} className="block min-h-11 font-semibold text-[#2f7a1c]">Exception screens</Link>
+
+      <button type="button" className="mt-4 flex min-h-[48px] w-full items-center justify-center gap-2 rounded-[12px] border border-[#e7c5c5] font-semibold text-[#f0b4b4]" onClick={() => setConfirm(true)}>
+        <LogOut size={18} aria-hidden />
+        Log Out
+      </button>
+      {confirm && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50" role="dialog" aria-modal="true" aria-labelledby="logout-title">
+          <div className="w-full max-w-[480px] rounded-t-[16px] bg-white shadow-sm ring-1 ring-[#ececec] p-4">
+            <h2 id="logout-title" className="text-xl font-semibold">Log out of SIH&S?</h2>
+            <div className="mt-4 flex gap-3">
+              <button type="button" className="min-h-11 flex-1 rounded-md border border-[#e5e7eb] font-semibold" onClick={() => setConfirm(false)}>Stay</button>
+              <button type="button" className="min-h-11 flex-1 rounded-md bg-white font-semibold" onClick={() => { logout(); navigate({ to: "/login" }); }}>Log Out</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
