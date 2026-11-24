@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { DemoBadge } from "@/components/DemoBadge";
-import { Button, Field, Input } from "@/components/kit";
+import { AuthFrame, authInputClass } from "@/components/AuthFrame";
+import { Button } from "@/components/kit";
 
 export const Route = createFileRoute("/mfa")({
   head: () => ({ meta: [{ title: "SIH&S — Verification code" }] }),
@@ -13,34 +13,43 @@ function Mfa() {
   const [code, setCode] = useState("");
   const [done, setDone] = useState(false);
   return (
-    <div className="theme-dark fixed inset-0 z-50 overflow-y-auto bg-[#0a3d24] px-5 py-10 text-white">
-      <DemoBadge label="Demo only" />
-      <h1 className="mt-4 text-[28px] font-semibold">Enter the second-factor code</h1>
-      <p className="mt-2 text-sm text-[#c5d4cc]">
-        Required before approving time, opening a restricted report, or releasing evidence. The sample code is 448291.
-      </p>
+    <AuthFrame
+      title="Verify it's you"
+      subtitle="A code is required before approving time, opening a restricted report, or releasing evidence."
+      backTo="/login"
+    >
       <form
-        className="mt-6"
+        className="space-y-4"
         onSubmit={(event) => {
           event.preventDefault();
           setDone(true);
         }}
       >
-        <Field label="6-digit code">
-          <Input value={code} onChange={(event) => setCode(event.target.value)} inputMode="numeric" autoComplete="one-time-code" />
-        </Field>
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium">6-digit code</span>
+          <input
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="448291"
+            className={`${authInputClass} tracking-[0.3em]`}
+          />
+        </label>
+        <p className="text-sm text-[#9fb5ab]">Preview code: 448291. Demo only.</p>
         <Button type="submit" full>
           Verify
         </Button>
       </form>
       {done && (
-        <p className="mt-4 rounded-md bg-[#06281f] p-3 text-sm" role="status">
-          Code accepted for this preview. Privileged action can continue.
-        </p>
+        <div className="mt-4 rounded-2xl border border-white/10 bg-[#073222] p-4 text-sm" role="status">
+          <p className="font-semibold">Code accepted</p>
+          <p className="mt-1 text-[#c9d9d1]">You can continue the privileged action.</p>
+          <button type="button" className="mt-3 min-h-11 font-semibold text-[#b6e38a]" onClick={() => navigate({ to: "/home" })}>
+            Continue
+          </button>
+        </div>
       )}
-      <button type="button" className="mt-4 min-h-11 text-sm font-semibold text-[#8fd86f]" onClick={() => navigate({ to: "/home" })}>
-        Back to the app
-      </button>
-    </div>
+    </AuthFrame>
   );
 }

@@ -98,20 +98,22 @@ function Apply() {
 
   return (
     <div className="theme-dark fixed inset-0 z-50 flex overflow-y-auto flex-col bg-[#0a3d24] text-white">
-      <header className="sticky top-0 z-30 flex items-center gap-2 bg-[#0a3d24] px-3 pt-[max(0.5rem,env(safe-area-inset-top))] pb-3">
-        <button
-          type="button"
-          className="flex h-11 shrink-0 items-center gap-1 rounded-md border border-white/40 bg-[#0c3328] px-3 text-sm font-semibold"
-          onClick={() => (step === 0 ? navigate({ to: "/login" }) : setStep((value) => value - 1))}
-        >
-          <ArrowLeft size={18} aria-hidden />
-          Back
-        </button>
-        <h1 className="min-w-0 flex-1 truncate text-center text-base font-semibold">Join SIH&S Staff</h1>
-        <span className="w-11 text-right text-xs font-semibold text-[#c5d4cc]">{step + 1}/5</span>
+      <header className="sticky top-0 z-30 bg-[#0a3d24]/95 px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-[440px] items-center gap-2">
+          <button
+            type="button"
+            className="inline-flex h-11 items-center gap-1 text-[15px] font-medium text-[#d7e7df]"
+            onClick={() => (step === 0 ? navigate({ to: "/login" }) : setStep((value) => value - 1))}
+          >
+            <ArrowLeft size={22} aria-hidden />
+            Back
+          </button>
+          <h1 className="min-w-0 flex-1 truncate text-center text-[15px] font-semibold">Apply for access</h1>
+          <span className="w-14 text-right text-xs font-medium text-[#9fb5ab]">Step {step + 1} of 5</span>
+        </div>
       </header>
 
-      <div className="px-5 pb-8">
+      <div className="mx-auto w-full max-w-[440px] px-5 pb-8">
         <ol className="flex gap-1" aria-label="Registration progress">
           {STEP_LABELS.map((label, index) => (
             <li key={label} className="flex-1">
@@ -342,7 +344,7 @@ function Apply() {
 }
 
 const accountInput =
-  "h-12 w-full rounded-full border border-white/10 bg-[#0c3328] pl-11 pr-3 text-[15px] text-[#f4f7f5] outline-none placeholder:text-[#c5d4cc] focus:border-[#5cba40]";
+  "h-12 w-full rounded-2xl border border-white/15 bg-[#073222] pl-11 pr-3 text-[16px] text-white outline-none placeholder:text-[#9fb5ab] focus:border-[#5cba40] focus:ring-2 focus:ring-[#5cba40]/35";
 
 function AccountField({
   label,

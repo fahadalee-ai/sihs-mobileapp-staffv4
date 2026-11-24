@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { DemoBadge } from "@/components/DemoBadge";
+import { AuthFrame } from "@/components/AuthFrame";
 import { Button } from "@/components/kit";
 
 export const Route = createFileRoute("/invite")({
@@ -10,24 +10,41 @@ export const Route = createFileRoute("/invite")({
 function Invite() {
   const navigate = useNavigate();
   return (
-    <div className="theme-dark fixed inset-0 z-50 overflow-y-auto bg-[#0a3d24] px-5 py-10 text-white">
-      <DemoBadge label="Demo only" />
-      <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-[#8fd86f]">Invitation</p>
-      <h1 className="mt-2 text-[28px] font-semibold">Avery Quinn invited you to SIH&S</h1>
-      <p className="mt-3 text-sm text-[#c5d4cc]">
-        Northwind Lot Services · Subcontractor Worker · Site: Harbor Yard. This invitation expires Fri, Dec 4, 2026, 5:00 PM EST.
+    <AuthFrame
+      title="You are invited"
+      subtitle="Avery Quinn invited you to join Northwind Lot Services on SIH&S."
+      backTo="/login"
+    >
+      <dl className="space-y-3 rounded-2xl border border-white/10 bg-[#073222] p-4 text-sm">
+        <div>
+          <dt className="text-xs font-medium uppercase tracking-wide text-[#9fb5ab]">Organization</dt>
+          <dd className="mt-0.5 font-semibold">Northwind Lot Services</dd>
+        </div>
+        <div>
+          <dt className="text-xs font-medium uppercase tracking-wide text-[#9fb5ab]">Role</dt>
+          <dd className="mt-0.5 font-semibold">Subcontractor worker · Towing and roadside</dd>
+        </div>
+        <div>
+          <dt className="text-xs font-medium uppercase tracking-wide text-[#9fb5ab]">Site</dt>
+          <dd className="mt-0.5 font-semibold">Harbor Yard</dd>
+        </div>
+        <div>
+          <dt className="text-xs font-medium uppercase tracking-wide text-[#9fb5ab]">Expires</dt>
+          <dd className="mt-0.5">Fri, Dec 4, 2026, 5:00 PM EST</dd>
+        </div>
+      </dl>
+      <p className="mt-4 text-sm leading-relaxed text-[#c9d9d1]">
+        Accepting starts setup. An administrator still approves the account before the first working login.
       </p>
-      <ul className="mt-4 space-y-2 text-sm">
-        <li className="rounded-md bg-[#06281f] p-3">Organization: Northwind Lot Services</li>
-        <li className="rounded-md bg-[#06281f] p-3">Role requested: Towing and roadside</li>
-        <li className="rounded-md bg-[#06281f] p-3">Admin approval is still required before the first working login.</li>
-      </ul>
       <Button type="button" full className="mt-6" onClick={() => navigate({ to: "/setup" })}>
         Accept invitation
       </Button>
-      <Link to="/login" className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-[#8fd86f]">
-        I already have an account
-      </Link>
-    </div>
+      <p className="mt-4 text-center text-sm text-[#c9d9d1]">
+        Already have an account?{" "}
+        <Link to="/login" className="font-semibold text-[#b6e38a]">
+          Sign in
+        </Link>
+      </p>
+    </AuthFrame>
   );
 }

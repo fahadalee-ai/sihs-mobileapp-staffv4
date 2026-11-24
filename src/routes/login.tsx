@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ChevronRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Building2, ChevronRight, Eye, EyeOff, Fingerprint } from "lucide-react";
 import { useState } from "react";
-import { BrandLogo } from "@/components/BrandLogo";
+import { AuthFrame, authInputClass } from "@/components/AuthFrame";
 import { CallHook } from "@/components/Chrome";
 import { Button } from "@/components/kit";
 import { DEMO_USERS, type StaffUser } from "@/lib/staff-data";
@@ -36,130 +36,154 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [remember, setRemember] = useState(true);
 
   const open = (person: StaffUser) => {
     preview(person.id);
     navigate({ to: destination(person) });
   };
 
-  return (
-    <div className="theme-dark fixed inset-0 z-50 flex overflow-y-auto flex-col bg-[#0a3d24] px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.75rem,env(safe-area-inset-top))] text-white">
-      <BrandLogo size="md" />
-      <h1 className="mt-8 text-[28px] font-semibold leading-tight tracking-tight">Staff Sign In</h1>
-      <p className="mt-2 max-w-[22rem] text-[15px] leading-snug text-[#c5d4cc]">Sign in with your SIH&S staff account.</p>
+  const enterDemo = (id: string) => {
+    const person = DEMO_USERS.find((item) => item.id === id);
+    if (person) open(person);
+  };
 
+  return (
+    <AuthFrame title="Welcome back" subtitle="Sign in to continue with your SIH&S staff account.">
       <form
-        className="mt-6 rounded-2xl border border-white/10 bg-[#06281f] p-5"
+        className="space-y-4"
         noValidate
-        onSubmit={(e) => {
-          e.preventDefault();
+        onSubmit={(event) => {
+          event.preventDefault();
           login(email, password);
           const person = DEMO_USERS.find((item) => item.email.toLowerCase() === email.trim().toLowerCase());
           navigate({ to: person ? destination(person) : "/home" });
         }}
       >
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-[#f4f7f5]">Email</span>
-          <span className="relative block">
-            <Mail size={18} aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8fd86f]" />
-            <input
-              type="email"
-              autoComplete="username"
-              inputMode="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@company.com"
-              className="h-12 w-full rounded-full border border-white/10 bg-[#0c3328] pl-11 pr-3 text-[15px] text-[#f4f7f5] outline-none placeholder:text-[#c5d4cc] focus:border-[#5cba40]"
-            />
-          </span>
+          <span className="mb-1.5 block text-sm font-medium">Email</span>
+          <input
+            type="email"
+            autoComplete="username"
+            inputMode="email"
+            autoFocus
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="name@company.com"
+            className={authInputClass}
+          />
         </label>
 
-        <label className="mt-4 block">
-          <span className="mb-2 block text-sm font-medium text-[#f4f7f5]">Password</span>
+        <label className="block">
+          <span className="mb-1.5 flex items-center justify-between gap-3">
+            <span className="text-sm font-medium">Password</span>
+            <Link to="/forgot" className="text-sm font-semibold text-[#b6e38a]">
+              Forgot password?
+            </Link>
+          </span>
           <span className="relative block">
-            <Lock size={18} aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8fd86f]" />
             <input
               type={show ? "text" : "password"}
               autoComplete="current-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
               placeholder="Enter your password"
-              className="h-12 w-full rounded-full border border-white/10 bg-[#0c3328] pl-11 pr-12 text-[15px] text-[#f4f7f5] outline-none placeholder:text-[#c5d4cc] focus:border-[#5cba40]"
+              className={`${authInputClass} pr-12`}
             />
             <button
               type="button"
               aria-label={show ? "Hide password" : "Show password"}
-              className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-[#c5d4cc]"
-              onClick={() => setShow((v) => !v)}
+              className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-[#c9d9d1]"
+              onClick={() => setShow((value) => !value)}
             >
               {show ? <EyeOff size={18} aria-hidden /> : <Eye size={18} aria-hidden />}
             </button>
           </span>
         </label>
 
-        <div className="mt-1 flex justify-end">
-          <Link to="/forgot" className="inline-flex min-h-11 items-center text-sm font-semibold text-[#8fd86f]">
-            Forgot password?
-          </Link>
-        </div>
-        <label className="mb-3 flex items-center gap-2 text-sm">
-          <input type="checkbox" defaultChecked />
+        <label className="flex min-h-11 items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={remember}
+            onChange={(event) => setRemember(event.target.checked)}
+            className="h-5 w-5 accent-[#5cba40]"
+          />
           Remember this device
         </label>
+
         <Button type="submit" full>
           Sign in
         </Button>
       </form>
 
-      <Link to="/invite" className="mt-3 flex min-h-12 items-center rounded-md border border-white/20 px-4 text-sm font-semibold">
-        Accept an invitation
-      </Link>
-      <button type="button" className="mt-3 flex min-h-12 w-full items-center rounded-md border border-white/20 px-4 text-left text-sm font-semibold">
-        Sign in with company account
-      </button>
-      <button type="button" className="mt-3 flex min-h-12 w-full items-center rounded-md border border-white/20 px-4 text-left text-sm font-semibold">
-        Face ID or fingerprint <span className="ml-2 text-xs text-[#8fd86f]">Demo only</span>
-      </button>
-      <Link to="/office" className="mt-3 flex min-h-12 items-center rounded-md border border-white/20 px-4 text-sm font-semibold">
-        Office dashboard
-      </Link>
+      <div className="my-6 flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-[#9fb5ab]">
+        <span className="h-px flex-1 bg-white/15" />
+        or
+        <span className="h-px flex-1 bg-white/15" />
+      </div>
 
-      <Link
-        to="/apply"
-        className="mt-3 flex min-h-12 items-center justify-between rounded-md border border-white/20 px-4 text-sm font-semibold"
-      >
-        New staff? Apply for access
-        <ChevronRight size={18} aria-hidden />
-      </Link>
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={() => enterDemo("st-dana")}
+          className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-[#073222] px-2 text-sm font-semibold"
+        >
+          <Building2 size={18} aria-hidden />
+          Company
+        </button>
+        <button
+          type="button"
+          onClick={() => enterDemo("st-dana")}
+          className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-[#073222] px-2 text-sm font-semibold"
+        >
+          <Fingerprint size={18} aria-hidden />
+          Biometrics
+        </button>
+      </div>
+      <p className="mt-2 text-center text-xs text-[#9fb5ab]">Biometrics are a preview on this device. Demo only.</p>
 
-      <section className="mt-8">
-        <h2 className="text-[11px] font-semibold uppercase tracking-wide text-[#c5d4cc]">Sample accounts</h2>
-        <p className="mt-1 text-xs leading-snug text-[#c5d4cc]">These open a design preview. They are not a live sign-in.</p>
-        <ul className="mt-2 overflow-hidden rounded-md border border-white/15 bg-[#06281f]">
-          {SAMPLES.map(([id, label, detail], index) => (
-            <li key={id} className={index > 0 ? "border-t border-white/10" : undefined}>
-              <button
-                type="button"
-                className="flex min-h-11 w-full items-center justify-between gap-3 px-3 py-2 text-left"
-                onClick={() => {
-                  const person = DEMO_USERS.find((item) => item.id === id);
-                  if (person) open(person);
-                }}
-              >
+      <p className="mt-6 text-center text-sm text-[#c9d9d1]">
+        New to SIH&S?{" "}
+        <Link to="/apply" className="font-semibold text-[#b6e38a]">
+          Apply for access
+        </Link>
+      </p>
+      <p className="mt-2 text-center text-sm text-[#c9d9d1]">
+        Have an invitation?{" "}
+        <Link to="/invite" className="font-semibold text-[#b6e38a]">
+          Accept it
+        </Link>
+      </p>
+
+      <details className="mt-8 rounded-2xl border border-white/10 bg-[#073222]/80">
+        <summary className="min-h-12 cursor-pointer list-none px-4 py-3 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+          <span className="flex items-center justify-between">
+            Preview a sample account
+            <ChevronRight size={16} aria-hidden />
+          </span>
+          <span className="mt-0.5 block text-xs font-normal text-[#9fb5ab]">Design samples only. Not a live sign-in.</span>
+        </summary>
+        <ul className="border-t border-white/10">
+          {SAMPLES.map(([id, label, detail]) => (
+            <li key={id} className="border-b border-white/10 last:border-b-0">
+              <button type="button" className="flex min-h-12 w-full items-center justify-between gap-3 px-4 py-2 text-left" onClick={() => enterDemo(id)}>
                 <span>
                   <span className="block text-sm font-semibold">{label}</span>
-                  <span className="block text-xs text-[#c5d4cc]">{detail}</span>
+                  <span className="block text-xs text-[#9fb5ab]">{detail}</span>
                 </span>
-                <ChevronRight size={18} className="shrink-0 text-[#8fd86f]" aria-hidden />
+                <ChevronRight size={16} className="shrink-0 text-[#b6e38a]" aria-hidden />
               </button>
             </li>
           ))}
         </ul>
-      </section>
+      </details>
 
-      <div className="mt-auto pt-8">
+      <div className="mt-8 flex flex-col items-center gap-2">
+        <Link to="/office" className="text-sm font-medium text-[#c9d9d1] underline-offset-2 hover:underline">
+          Open the office dashboard
+        </Link>
         <CallHook dark />
       </div>
-    </div>
+    </AuthFrame>
   );
 }
